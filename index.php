@@ -1,0 +1,337 @@
+<?php
+session_start();
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personal Portfolio Templates</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+body { font-family:'Poppins',sans-serif; margin:0; background:#f5f6fa; color:#333; }
+/* Header */
+header { background:#1e2a38; color:#fff; padding:20px 40px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; box-shadow:0 2px 8px rgba(0,0,0,0.2); }
+.header-logo { display:flex; align-items:center; gap:10px; font-size:24px; font-weight:600; color:#fff; }
+.header-logo img { width:40px; height:40px; object-fit:cover; border-radius:6px; transition: transform 0.5s ease; }
+.header-logo img:hover { transform: rotate(20deg); }
+.nav-links { display:flex; align-items:center; gap:15px; }
+.nav-links a { color:#f0f0f0; text-decoration:none; font-weight:500; font-size:15px; cursor:pointer; }
+.nav-links a:hover { color:#00b4d8; }
+/* Search Bar */
+.search-bar { position:relative; }
+.search-bar input { padding:8px 36px 8px 12px; border-radius:6px; border:1px solid #ccc; outline:none; font-size:14px; background:#fff; }
+.search-bar i { position:absolute; right:10px; top:50%; transform:translateY(-50%); color:#555; font-size:14px; pointer-events:none; }
+/* Custom Modal Cards */
+.custom-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1050; }
+.modal-card { background:#fff; padding:35px 40px; border-radius:15px; width:450px; max-width:95%; box-shadow:0 5px 25px rgba(0,0,0,0.35); position:relative; }
+.modal-card h5 { text-align:center; margin-bottom:20px; color:#1e2a38; }
+.close-btn { position:absolute; top:15px; right:15px; font-size:22px; cursor:pointer; color:#555; }
+.modal-card input, .modal-card select { width:100%; padding:12px; margin-bottom:15px; border-radius:6px; border:1px solid #ccc; font-size:15px; }
+.modal-card .btn-login, .modal-card .btn-signup { background:#1e2a38; color:#fff; border:none; width:100%; padding:12px; border-radius:6px; font-size:17px; cursor:pointer; }
+.modal-card .btn-login:hover, .modal-card .btn-signup:hover { background:#334155; }
+.modal-footer-links { display:flex; justify-content:center; gap:10px; font-size:14px; margin-top:10px; }
+.modal-footer-links a { color:#1e2a38; text-decoration:none; font-weight:500; }
+.modal-footer-links a:hover { text-decoration:underline; }
+/* Scrolling Banner */
+.scroll-banner { overflow:hidden; color:#1e2a38; font-weight:700; font-size:18px; padding:10px 0; border-radius:6px; max-width:1000px; margin:25px auto; text-align:center; }
+.scroll-banner span { display:inline-block; white-space:nowrap; padding-left:100%; animation:scrollText 15s linear infinite; }
+@keyframes scrollText { 0% {transform:translateX(0%);} 100% {transform:translateX(-100%);} }
+/* Intro Section */
+.intro-section { background:#ffffff; padding:30px; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin:20px auto; border-radius:10px; max-width:1000px; }
+.intro-section h2 { color:#1e2a38; margin-bottom:15px; }
+.intro-section p { font-size:16px; color:#555; max-width:800px; margin:auto; line-height:1.8; }
+/* Templates Container */
+.template-container { padding:20px; display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:25px; justify-content:center; }
+.template-card { border-radius:15px; overflow:hidden; box-shadow:0 5px 15px rgba(0,0,0,0.1); cursor:pointer; transition:0.3s; width:100%; aspect-ratio:1/1; display:flex; flex-direction:column; justify-content:space-between; }
+.template-card:hover { transform:translateY(-6px); box-shadow:0 8px 18px rgba(0,0,0,0.2); }
+.template-photo { width:100px; height:100px; object-fit:cover; border-radius:50%; border:3px solid #fff; cursor:pointer; }
+.template-section { padding:10px 15px; }
+.template-section h4 { margin-bottom:5px; }
+.template-section p { margin:0; font-size:14px; }
+/* Project image preview */
+.project-preview { width:70px; height:70px; border-radius:10px; object-fit:cover; margin-top:5px; border:2px solid #ccc; }
+.project-wrapper { display:flex; align-items:center; gap:8px; margin-top:5px; }
+.remove-btn { background:#dc3545; color:#fff; border:none; border-radius:5px; padding:4px 8px; font-size:12px; cursor:pointer; }
+.remove-btn:hover { background:#c82333; }
+/* Editor Modal */
+#templateEditor { padding:20px; background:#f9fafc; max-height:80vh; min-height:500px; overflow:auto; border-radius:10px; border:1px solid #ddd; display:block; font-size:18px; }
+#templateEditor h4 { font-size:32px; }
+#templateEditor h5 { font-size:26px; }
+#templateEditor h6 { font-size:22px; }
+#templateEditor p { font-size:20px; line-height:1.8; }
+#templateEditor .project-add-section span { font-size:18px; }
+#templateEditor .remove-btn { font-size:16px; padding:6px 10px; }
+#templateEditor .template-photo { width:160px; height:160px; border-width:4px; }
+#templateEditor .project-preview { width:120px; height:120px; }
+#templateEditor .template-card { display:block !important; height:auto !important; flex:none !important; aspect-ratio:unset !important; margin-bottom:0; }
+.modal-footer { border-top:none; }
+.btn-primary { background:#0077b6; border:none; }
+.btn-primary:hover { background:#005f8f; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">
+    <img id="logoImage" alt="Logo">
+    <span>Personal Portfolio Templates</span>
+  </div>
+  <div class="nav-links" id="navLinks">
+    <?php if(isset($_SESSION['user_id'])): ?>
+        <a href="profile.php" id="myProfileBtn">My Profile</a>
+        
+    <?php else: ?>
+        <a href="#" onclick="openModal('loginModal')">Login</a>
+        <a href="#" onclick="openModal('signupModal')">Signup</a>
+    <?php endif; ?>
+    <a href="contact.php">Contact us</a>
+    <a href="about.php">About us</a>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search templates...">
+      <i class="fas fa-search"></i>
+    </div>
+  </div>
+</header>
+
+<div class="scroll-banner">
+  <span>Design, customize, and download your professional portfolio — fast, simple, and elegant!</span>
+</div>
+
+<section class="intro-section">
+  <h2>Explore Professional Portfolio Templates</h2>
+  <p>Welcome to our Personal Portfolio Templates website — your one-stop destination to design and customize stunning portfolio layouts. Each template is built with flexibility and creativity in mind. You can edit your details, upload your photos, showcase your projects, and instantly download your personalized portfolio for professional use.</p>
+</section>
+
+<div class="container template-container" id="templateContainer"></div>
+
+<!-- Login Modal -->
+<div class="custom-modal" id="loginModal">
+  <div class="modal-card">
+    <span class="close-btn" onclick="closeModal('loginModal')">&times;</span>
+    <h5>Login</h5>
+    <form id="loginForm">
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit" class="btn-login">Login</button>
+      <div class="modal-footer-links">
+        <a href="#" onclick="switchModal('loginModal','signupModal')">Forgot Password?</a>
+        <a href="#" onclick="switchModal('loginModal','signupModal')">Signup</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Signup Modal -->
+<div class="custom-modal" id="signupModal">
+  <div class="modal-card">
+    <span class="close-btn" onclick="closeModal('signupModal')">&times;</span>
+    <h5>Signup</h5>
+    <form id="signupForm">
+      <input type="text" name="fullname" placeholder="Full Name" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <input type="text" name="contact" placeholder="Contact Number" required>
+      <select name="gender" required>
+        <option value="">Select Gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+      <button type="submit" class="btn-signup">Signup</button>
+      <div class="modal-footer-links">
+        <span>Already have an account?</span>
+        <a href="#" onclick="switchModal('signupModal','loginModal')">Login</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Editor Modal -->
+<div class="modal fade" id="editorModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Template</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="templateEditor" contenteditable="true"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="downloadTemplateBtn">Download</button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ---------------- General JS ----------------
+document.getElementById('logoImage').src = `https://ui-avatars.com/api/?name=PP&background=random&size=128`;
+let isLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
+function openModal(id){ document.getElementById(id).style.display='flex'; }
+function closeModal(id){ document.getElementById(id).style.display='none'; }
+function switchModal(from,to){ closeModal(from); openModal(to); }
+
+// ---------------- Templates ----------------
+const templatePhotos = Array.from({length:10},(_,i)=>`https://i.pravatar.cc/150?img=${i+1}`);
+const templates = [
+  {id:'t1',name:"Emma Watson",role:"Creative Web Designer",tagline:"Crafting visually stunning web experiences",bg:"linear-gradient(to right,#ff9a9e,#fad0c4)",headings:["About Me","Skills","Portfolio","Experience","Contact"]},
+  {id:'t2',name:"John Smith",role:"Frontend Developer",tagline:"Building fast, interactive web apps",bg:"linear-gradient(to right,#a1c4fd,#c2e9fb)",headings:["My Story","Design Philosophy","Projects","Case Studies","Testimonials","Contact"]},
+  {id:'t3',name:"Alice Johnson",role:"Backend Developer",tagline:"Creating robust backend systems",bg:"linear-gradient(to right,#fbc2eb,#a6c1ee)",headings:["Who I Am","Tech Skills","Projects & Apps","Work Experience","Blog / Insights","Contact"]},
+  {id:'t4',name:"Michael Lee",role:"UI/UX Designer",tagline:"Designing intuitive interfaces",bg:"linear-gradient(to right,#fddb92,#d1fdff)",headings:["Introduction","Gallery","Featured Projects","Awards & Recognition","Client Testimonials","Contact"]},
+  {id:'t5',name:"Sophia Brown",role:"Fullstack Developer",tagline:"Combining frontend & backend expertise",bg:"linear-gradient(to right,#89f7fe,#66a6ff)",headings:["About Me","Services Offered","Portfolio","Clients & Reviews","Pricing / Packages","Contact"]},
+  {id:'t6',name:"Liam Davis",role:"Mobile App Developer",tagline:"Building functional mobile apps",bg:"linear-gradient(to right,#f7971e,#ffd200)",headings:["Bio","Published Works","Writing Samples","Awards & Recognition","Media Mentions","Contact"]},
+  {id:'t7',name:"Olivia Green",role:"Graphic Designer",tagline:"Creating visual identities",bg:"linear-gradient(to right,#ffecd2,#fcb69f)",headings:["Artist Statement","Gallery","Exhibitions","Commissions","Press & Awards","Contact"]},
+  {id:'t8',name:"Ethan Wilson",role:"Data Analyst",tagline:"Turning data into insights",bg:"linear-gradient(to right,#cfd9df,#e2ebf0)",headings:["About Me","UX Philosophy","Case Studies","Skills & Tools","Testimonials","Contact"]},
+  {id:'t9',name:"Ava Martinez",role:"Digital Marketer",tagline:"Creating campaigns that convert",bg:"linear-gradient(to right,#ff758c,#ff7eb3)",headings:["Professional Summary","Core Competencies","Key Projects","Certifications","Awards & Recognition","Contact"]},
+  {id:'t10',name:"Noah Taylor",role:"Fullstack Engineer",tagline:"Developing end-to-end solutions",bg:"linear-gradient(to right,#43e97b,#38f9d7)",headings:["About Me","Blog / Journal","Projects & Hobbies","Travel / Experiences","Gallery","Contact"]}
+];
+
+let uploadedPhotos = {};
+let currentEditingId = null;
+let bootstrapEditorModal = new bootstrap.Modal(document.getElementById('editorModal'));
+const templateContainer = document.getElementById('templateContainer');
+const templateEditor = document.getElementById('templateEditor');
+
+function displayTemplates(list){
+  templateContainer.innerHTML='';
+  list.forEach((t,i)=>{
+    const div=document.createElement('div');
+    const customPhoto=uploadedPhotos[t.id]||templatePhotos[i];
+    div.innerHTML=`
+      <div class="template-card" style="background:${t.bg};color:#333;">
+        <div class="d-flex justify-content-between align-items-center p-3">
+          <div>
+            <h4 contenteditable="${isLoggedIn}">${t.name}</h4>
+            <h6 contenteditable="${isLoggedIn}">${t.role}</h6>
+            <p style="font-size:13px;" contenteditable="${isLoggedIn}">${t.tagline}</p>
+          </div>
+          <img class="template-photo" src="${customPhoto}" ${isLoggedIn ? `onclick="changeProfilePhoto(this,'${t.id}')"` : ''}>
+        </div>
+        ${t.headings.map(h=>`<div class="template-section"><h5 contenteditable="${isLoggedIn}">${h}</h5><p contenteditable="${isLoggedIn}">Edit this section...</p></div>`).join('')}
+        <div class="template-section projects">
+          <div class="project-add-section d-flex align-items-center gap-2">
+            <span style="font-size:13px;color:#555;">Add project-related picture</span>
+            <button class="btn btn-sm btn-outline-primary" ${isLoggedIn ? '' : 'disabled'} onclick="uploadProjectImage(this)">Add</button>
+          </div>
+        </div>
+      </div>`;
+    if(isLoggedIn){
+      div.querySelector('.template-card').addEventListener('click',()=>openEditor(t.id,div.innerHTML));
+    }
+    templateContainer.appendChild(div);
+  });
+}
+displayTemplates(templates);
+
+document.getElementById('searchInput').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase();
+  const filtered=templates.filter(t=>t.name.toLowerCase().includes(q)||t.role.toLowerCase().includes(q)||t.headings.join(' ').toLowerCase().includes(q));
+  displayTemplates(filtered);
+});
+
+function openEditor(id,html){
+  currentEditingId=id;
+  let tempDiv=document.createElement('div');
+  tempDiv.innerHTML=html;
+  let card = tempDiv.querySelector('.template-card');
+  card.style.height='auto';
+  card.style.flex='unset';
+  card.style.aspectRatio='unset';
+  templateEditor.innerHTML = tempDiv.innerHTML;
+  bootstrapEditorModal.show();
+}
+
+function changeProfilePhoto(img,id){
+  const input=document.createElement('input');
+  input.type='file';
+  input.accept='image/*';
+  input.onchange=()=>{
+    const file=input.files[0];
+    if(file){
+      const reader=new FileReader();
+      reader.onload=()=>{
+        img.src=reader.result;
+        uploadedPhotos[id]=reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  input.click();
+}
+
+function uploadProjectImage(button){
+  const input=document.createElement('input');
+  input.type='file';
+  input.accept='image/*';
+  input.onchange=()=>{
+    const file=input.files[0];
+    if(file){
+      const reader=new FileReader();
+      reader.onload=()=>{
+        const wrapper=document.createElement('div');
+        wrapper.classList.add('project-wrapper');
+        const img=document.createElement('img');
+        img.src=reader.result;
+        img.classList.add('project-preview');
+        const removeBtn=document.createElement('button');
+        removeBtn.innerText='Remove';
+        removeBtn.classList.add('remove-btn');
+        removeBtn.onclick=()=>{ wrapper.remove(); button.closest('.project-add-section').style.display='flex'; };
+        wrapper.appendChild(img);
+        wrapper.appendChild(removeBtn);
+        button.closest('.projects').appendChild(wrapper);
+        button.closest('.project-add-section').style.display='none';
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  input.click();
+}
+
+document.getElementById('downloadTemplateBtn').addEventListener('click',()=>{
+  if(!isLoggedIn){ alert('Please login to download templates.'); return; }
+  const content=templateEditor.innerHTML;
+  const blob=new Blob([`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>My Portfolio</title></head><body>${content}</body></html>`],{type:'text/html'});
+  const link=document.createElement('a');
+  link.href=URL.createObjectURL(blob);
+  link.download='MyPortfolio.html';
+  link.click();
+});
+
+// ---------------- AJAX Signup ----------------
+document.getElementById('signupForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const formData = new FormData(this);
+  fetch('signup.php', { method:'POST', body:formData })
+    .then(res => res.json())
+    .then(data => { 
+        alert(data.message);
+        if(data.status==='success'){
+            this.reset(); closeModal('signupModal'); location.reload();
+        }
+    })
+    .catch(err => alert('Error: '+err));
+});
+
+// ---------------- AJAX Login ----------------
+document.getElementById('loginForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const formData = new FormData(this);
+  fetch('login.php', { method:'POST', body:formData })
+    .then(res => res.json())
+    .then(data => { 
+        alert(data.message);
+        if(data.status==='success'){
+            this.reset(); closeModal('loginModal'); location.reload();
+        }
+    })
+    .catch(err => alert('Error: '+err));
+});
+</script>
+</body>
+</html>
